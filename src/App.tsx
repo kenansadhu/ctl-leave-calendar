@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { supabase } from './lib/supabaseClient';
-import { Session } from '@supabase/auth-helpers-react';
+import type { Session } from '@supabase/auth-helpers-react'; // <-- This is the corrected line
 
 // Import our page components
 import Dashboard from './pages/Dashboard';

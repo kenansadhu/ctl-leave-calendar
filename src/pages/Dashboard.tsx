@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabaseClient';
-import { Session } from '@supabase/auth-helpers-react';
+import type { Session } from '@supabase/auth-helpers-react';
 import TeamMembers from '../components/TeamMembers';
 import PublicHolidays from '../components/PublicHolidays';
 import LeaveManager from '../components/LeaveManager';

@@ -1,5 +1,6 @@
 // src/components/TeamMembers.tsx
-import { useState, useEffect, FormEvent } from 'react';
+import { useState, useEffect } from 'react';
+import type { FormEvent } from 'react';
 import { supabase } from '../lib/supabaseClient';
 
 export type Member = { id: string; created_at: string; name: string; role: string | null; };

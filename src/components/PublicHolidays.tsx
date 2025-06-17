@@ -1,5 +1,6 @@
 // src/components/PublicHolidays.tsx
-import { useState, useEffect, FormEvent } from 'react';
+import { useState, useEffect } from 'react';
+import type { FormEvent } from 'react';
 import { supabase } from '../lib/supabaseClient';
 
 export type Holiday = { id: string; name: string; date: string; };

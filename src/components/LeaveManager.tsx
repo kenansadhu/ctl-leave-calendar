@@ -1,5 +1,6 @@
 // src/components/LeaveManager.tsx
-import { useState, useEffect, FormEvent } from 'react';
+import { useState, useEffect } from 'react';
+import type { FormEvent } from 'react';
 import { supabase } from '../lib/supabaseClient';
 
 type Member = { id: string; name: string; };
