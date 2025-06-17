@@ -3,9 +3,10 @@ import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
 import type { Event as RbcEvent, ToolbarProps } from 'react-big-calendar';
-import { format, parse, startOfWeek, getDay, addDays } from 'date-fns';
+import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { enUS } from 'date-fns/locale';
 
+// This setup is correct
 const locales = { 'en-US': enUS };
 const localizer = dateFnsLocalizer({ format, parse, startOfWeek, getDay, locales });
 
@@ -44,19 +45,29 @@ const Home = () => {
       ]);
 
       if (leavesResponse.error || holidaysResponse.error) {
-        console.error('Error fetching data:', leavesResponse.error || holidaysResponse.error); setLoading(false); return;
+        console.error('Error fetching data:', leavesResponse.error || holidaysResponse.error);
+        setLoading(false);
+        return;
       }
 
+      // THIS IS THE CORRECTED LOGIC BLOCK
       const formattedLeaves: CustomCalendarEvent[] = leavesResponse.data.map(leave => ({
-        title: leave.team_members?.name || 'Unknown', start: new Date(leave.start_date),
-        end: addDays(new Date(leave.end_date), 1), resource: { type: 'leave' }
+        title: leave.team_members?.name || 'Unknown',
+        start: new Date(leave.start_date),
+        end: new Date(leave.end_date), // The end date is INCLUSIVE
+        allDay: true, // We treat all leaves as all-day events for consistency
+        resource: { type: 'leave' }
       }));
+      // END OF CORRECTED LOGIC BLOCK
 
       const formattedHolidays: CustomCalendarEvent[] = holidaysResponse.data.map(holiday => ({
-        title: holiday.name, start: new Date(holiday.date),
-        end: new Date(holiday.date), allDay: true, resource: { type: 'holiday' }
+        title: holiday.name,
+        start: new Date(holiday.date),
+        end: new Date(holiday.date),
+        allDay: true,
+        resource: { type: 'holiday' }
       }));
-
+      
       setEvents([...formattedLeaves, ...formattedHolidays]);
       setLoading(false);
     };
@@ -77,7 +88,6 @@ const Home = () => {
 
   return (
     <div style={{ padding: '1rem 2rem' }}>
-      {/* This style block contains all the "prettier" enhancements */}
       <style type="text/css">{`
         .rbc-toolbar { margin: 20px 0; display: flex; justify-content: space-between; align-items: center; }
         .rbc-toolbar-label { font-size: 1.5em; font-weight: bold; }
@@ -88,11 +98,11 @@ const Home = () => {
         .rbc-off-range-bg { background: #f9f9f9; }
         .rbc-today { background-color: #eaf6ff; }
       `}</style>
-
+      
       <div style={{ textAlign: 'center' }}>
-        <h1>CTL Leave Calendar</h1>
+        <h1>Team Leave Calendar</h1>
       </div>
-
+      
       <div style={{ height: '80vh' }}>
         <Calendar
           localizer={localizer}
@@ -116,7 +126,6 @@ const Home = () => {
           Go to Admin Dashboard
         </Link>
       </div>
-
     </div>
   );
 };
