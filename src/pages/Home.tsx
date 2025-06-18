@@ -71,11 +71,10 @@ const Home = () => {
     fetchAndFormatData();
   }, []);
 
+  // UPDATED: This function now opens the modal for ANY event click
   const handleSelectEvent = (event: CustomCalendarEvent) => {
-    if (event.resource?.type === 'leave') {
-      setSelectedEvent(event);
-      setIsModalOpen(true);
-    }
+    setSelectedEvent(event);
+    setIsModalOpen(true);
   };
 
   const eventStyleGetter = (event: CustomCalendarEvent) => {
@@ -89,7 +88,6 @@ const Home = () => {
   if (loading) return <p>Loading calendar...</p>;
 
   return (
-    // Using the correct Flexbox layout from the version that worked
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', padding: '1rem' }}>
 
       <style type="text/css">{`
@@ -102,7 +100,7 @@ const Home = () => {
         .rbc-off-range-bg { background: #f9f9f9; }
         .rbc-today { background-color: #eaf6ff; }
         .rbc-month-row { min-height: 120px; }
-        .rbc-event { padding: 1px 5px; font-size: 0.8em; }
+        .rbc-event { padding: 1px 5px; font-size: 0.8em; cursor: pointer; }
         .rbc-date-cell { text-align: right; padding-right: 10px; }
         .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; }
         .modal-content { background: white; padding: 2rem; border-radius: 8px; max-width: 500px; width: 90%; position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
@@ -113,10 +111,9 @@ const Home = () => {
       `}</style>
 
       <div style={{ textAlign: 'center' }}>
-        <h1>Team Leave Calendar</h1>
+        <h1>CTL Leave Calendar</h1>
       </div>
 
-      {/* This div flexibly grows to take up all available space */}
       <div style={{ flex: 1, minHeight: '500px' }}>
         <Calendar
           localizer={localizer}
@@ -134,27 +131,38 @@ const Home = () => {
         />
       </div>
 
-      {/* This div is correctly positioned at the bottom */}
       <div style={{ textAlign: 'center', marginTop: '2rem', paddingBottom: '1rem' }}>
         <Link to="/admin" style={{textDecoration:'none', padding: '10px 20px', backgroundColor: '#333', color: 'white', borderRadius: '5px', fontWeight: 'bold'}}>
           Go to Admin Dashboard
         </Link>
       </div>
 
-      {/* And here is the modal logic */}
+      {/* UPDATED: The modal now checks what kind of event was clicked */}
       {isModalOpen && selectedEvent && (
         <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <button className="modal-close-btn" onClick={() => setIsModalOpen(false)}>&times;</button>
-            <h3>Leave Details</h3>
-            <p><strong>Name:</strong> {selectedEvent.title}</p>
-            <p><strong>Role:</strong> {selectedEvent.resource?.role || 'N/A'}</p>
-            <p><strong>Type:</strong> {selectedEvent.resource?.leave_type}</p>
-            <p><strong>Dates:</strong> {format(selectedEvent.start as Date, 'PPP')} to {format(selectedEvent.end as Date, 'PPP')}</p>
-            {selectedEvent.resource?.note && (
+
+            {/* If it's a leave, show leave details */}
+            {selectedEvent.resource?.type === 'leave' && (
               <>
-                <hr/>
-                <p><strong>Note:</strong> {selectedEvent.resource.note}</p>
+                <h3>Leave Details</h3>
+                <p><strong>Name:</strong> {selectedEvent.title}</p>
+                <p><strong>Role:</strong> {selectedEvent.resource?.role || 'N/A'}</p>
+                <p><strong>Type:</strong> {selectedEvent.resource?.leave_type}</p>
+                <p><strong>Dates:</strong> {format(selectedEvent.start as Date, 'PPP')} to {format(selectedEvent.end as Date, 'PPP')}</p>
+                {selectedEvent.resource?.note && (
+                  <><hr/><p><strong>Note:</strong> {selectedEvent.resource.note}</p></>
+                )}
+              </>
+            )}
+
+            {/* If it's a holiday, show holiday details */}
+            {selectedEvent.resource?.type === 'holiday' && (
+               <>
+                <h3>Public Holiday</h3>
+                <p><strong>{selectedEvent.title}</strong></p>
+                <p><strong>Date:</strong> {format(selectedEvent.start as Date, 'PPP')}</p>
               </>
             )}
           </div>
